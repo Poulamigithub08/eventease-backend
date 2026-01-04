@@ -18,6 +18,7 @@ const createEvent = async (req, res) => {
       title,
       description,
       date,
+      createdBy: req.user.id
     });
 
     await newEvent.save();
@@ -81,6 +82,23 @@ const deleteEvent = async (req, res) => {
     });
   }
 };
+const getMyEvents = async (req, res) => {
+  try {
+    const events = await Event.find({
+      createdBy: req.user.id
+    });
+
+    res.status(200).json({
+      success: true,
+      events
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
 
 // =======================
 // EXPORTS (VERY IMPORTANT)
@@ -88,6 +106,7 @@ const deleteEvent = async (req, res) => {
 module.exports = {
   createEvent,
   getEvents,
-  deleteEvent,
+  getMyEvents,
+  deleteEvent
 };
 

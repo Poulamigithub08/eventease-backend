@@ -58,6 +58,8 @@ const getEvents = async (req, res) => {
 // =======================
 // DELETE EVENT
 // =======================
+
+//TODO: Add authorization to ensure only event creator or admin can delete
 const deleteEvent = async (req, res) => {
   try {
     const { id } = req.params;
@@ -99,6 +101,8 @@ const getMyEvents = async (req, res) => {
     });
   }
 };
+
+//TODO: Update Event with authorization checks
 
 // =======================
 // EXPORTS (VERY IMPORTANT)

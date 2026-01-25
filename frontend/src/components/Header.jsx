@@ -306,12 +306,6 @@ export default function Header() {
             >
               Sign In
             </Link>
-            <Link
-              to="/signup"
-              className="text-gray-300 hover:text-white transition"
-            >
-              Sign Up
-            </Link>
           </div>
         )}
       </div>

@@ -9,89 +9,12 @@ export default function MyEvents() {
   const [activeTab, setActiveTab] = useState("upcoming");
   const [selectedEvent, setSelectedEvent] = useState(null);
   const navigate = useNavigate();
-  const [events, setEvents] = useState({upcoming: [], past: [], draft: []});
+  const [events, setEvents] = useState({ upcoming: [], past: [], draft: [] });
+  const [role, setRole] = useState(null);
+  const [stats, setStats] = useState(null);
 
   // Sample events data
-  const demo_events = {
-    upcoming: [
-      {
-        id: 1,
-        title: "Tech Innovation Summit 2024",
-        date: "2024-03-15",
-        time: "09:00 AM - 05:00 PM",
-        venue: "Convention Center Downtown",
-        status: "confirmed",
-        type: "conference",
-        attendees: 250,
-        budget: "$15,000",
-        progress: 75
-      },
-      {
-        id: 2,
-        title: "Sarah & James Wedding",
-        date: "2024-04-20",
-        time: "02:00 PM - 11:00 PM",
-        venue: "Grand Garden Resort",
-        status: "planning",
-        type: "wedding",
-        attendees: 150,
-        budget: "$25,000",
-        progress: 45
-      },
-      {
-        id: 3,
-        title: "Product Launch - Nova Series",
-        date: "2024-05-10",
-        time: "06:00 PM - 09:00 PM",
-        venue: "Tech Hub Arena",
-        status: "confirmed",
-        type: "corporate",
-        attendees: 300,
-        budget: "$35,000",
-        progress: 90
-      }
-    ],
-    past: [
-      {
-        id: 4,
-        title: "Annual Charity Gala",
-        date: "2024-01-20",
-        time: "07:00 PM - 11:00 PM",
-        venue: "Royal Ballroom",
-        status: "completed",
-        type: "charity",
-        attendees: 200,
-        budget: "$20,000",
-        rating: 4.8
-      },
-      {
-        id: 5,
-        title: "Winter Music Festival",
-        date: "2023-12-15",
-        time: "12:00 PM - 10:00 PM",
-        venue: "City Park Amphitheater",
-        status: "completed",
-        type: "festival",
-        attendees: 5000,
-        budget: "$80,000",
-        rating: 4.9
-      }
-    ],
-    draft: [
-      {
-        id: 6,
-        title: "Corporate Team Building",
-        date: "2024-06-15",
-        time: "10:00 AM - 04:00 PM",
-        venue: "Adventure Park",
-        status: "draft",
-        type: "corporate",
-        attendees: 50,
-        budget: "$8,000",
-        progress: 20
-      }
-    ]
-  };
+
 
   const navItems = [
     { to: "/", label: "HOME" },
@@ -105,66 +28,35 @@ export default function MyEvents() {
   ];
 
   const eventStats = [
-    {
-      icon: "📅",
-      title: "Upcoming Events",
-      value: "3",
-      color: "from-green-500/15 to-green-600/10",
-      border: "border-green-500/25"
-    },
-    {
-      icon: "✅",
-      title: "Completed",
-      value: "12",
-      color: "from-blue-500/15 to-blue-600/10",
-      border: "border-blue-500/25"
-    },
-    {
-      icon: "⏳",
-      title: "In Planning",
-      value: "5",
-      color: "from-yellow-500/15 to-yellow-600/10",
-      border: "border-yellow-500/25"
-    },
-    {
-      icon: "💰",
-      title: "Total Budget",
-      value: "$158K",
-      color: "from-purple-500/15 to-purple-600/10",
-      border: "border-purple-500/25"
-    }
-  ];
-
-  const quickActions = [
-    {
-      icon: "🎯",
-      title: "Create New Event",
-      description: "Start planning a new event",
-      color: "from-red-500/15 to-red-600/10",
-      border: "border-red-500/25"
-    },
-    {
-      icon: "📊",
-      title: "Event Analytics",
-      description: "View event performance",
-      color: "from-purple-500/15 to-purple-600/10",
-      border: "border-purple-500/25"
-    },
-    {
-      icon: "👥",
-      title: "Manage Team",
-      description: "Coordinate with your team",
-      color: "from-blue-500/15 to-blue-600/10",
-      border: "border-blue-500/25"
-    },
-    {
-      icon: "📝",
-      title: "Templates",
-      description: "Use event templates",
-      color: "from-green-500/15 to-green-600/10",
-      border: "border-green-500/25"
-    }
-  ];
+{
+  icon: "📅",
+  title: "Upcoming Events",
+  value: stats?.upcoming || 0,
+  color: "from-green-500/15 to-green-600/10",
+  border: "border-green-500/25"
+},
+{
+  icon: "✅",
+  title: "Completed",
+  value: stats?.past || 0,
+  color: "from-blue-500/15 to-blue-600/10",
+  border: "border-blue-500/25"
+},
+{
+  icon: "⏳",
+  title: "In Planning",
+  value: stats?.draft || 0,
+  color: "from-yellow-500/15 to-yellow-600/10",
+  border: "border-yellow-500/25"
+},
+{
+  icon: "💰",
+  title: "Total Events",
+  value: stats?.total || 0,
+  color: "from-purple-500/15 to-purple-600/10",
+  border: "border-purple-500/25"
+}
+];
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -187,34 +79,42 @@ export default function MyEvents() {
     }
   };
   useEffect(() => {
-  const fetchMyEvents = async () => {
-    try {
-      const res = await API.get("/events/my-events");
-      console.log("Response Status:", res);
-      console.log("Response Data:", res.data);
-      // if (res.status === 401){
-      //   toast.error("Please login to view your events");
-      //   setTimeout(() => {
-      //     navigate("/signin");
-      //   }, 2000);
-      // }
-      setEvents(res.data.events);
-      console.log("My Events:", res.data.events);
 
-      // Later we will replace fake data with real data
+  const fetchMyEvents = async () => {
+
+    try {
+
+      const res = await API.get("/events/my-events");
+
+      console.log("Response Data:", res.data);
+
+      // store events
+      setEvents(res.data.events);
+
+      // store role
+      setRole(res.data.role);
+
+      // store statistics
+      setStats(res.data.stats);
+
     } catch (err) {
+
       console.error(err);
-      if (err?.response?.status === 401 || err.status === 401){
+
+      if (err?.response?.status === 401) {
         toast.error("Please login to view your events");
+
         setTimeout(() => {
           navigate("/signin");
         }, 2000);
       }
-      
+
     }
+
   };
 
   fetchMyEvents();
+
 }, []);
 
 
@@ -253,6 +153,7 @@ export default function MyEvents() {
       <section className="relative py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto text-center">
           <h1 className="text-xl md:text-2xl font-black mb-2 leading-tight animate-fade-in">
+            <p className="text-gray-400 text-xs">Logged in as: {role}</p>
             My <span className="text-transparent bg-gradient-to-r from-red-400 to-red-600 bg-clip-text">Events</span>
           </h1>
           <p className="text-xs text-gray-300 mb-6 max-w-md mx-auto leading-relaxed animate-fade-in delay-100">
@@ -402,7 +303,7 @@ export default function MyEvents() {
                       </div>
                       <div className="flex items-center space-x-2 text-xs text-gray-300">
                         <span>👥</span>
-                        <span>{event.attendees.toLocaleString()} attendees</span>
+                        <span>{event.attendees?.length || 0} attendees</span>
                       </div>
                       <div className="flex items-center space-x-2 text-xs text-gray-300">
                         <span>💰</span>

@@ -23,7 +23,7 @@ const eventSchema = new mongoose.Schema(
 
   status: {
     type: String,
-    enum: ["draft", "planning", "confirmed", "completed"],
+    enum: ["draft", "confirmed", "completed", "cancelled"],
     default: "draft"
   },
 
@@ -48,6 +48,11 @@ const eventSchema = new mongoose.Schema(
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true
+  },
+  
+  ticket_price: {
+    type: Number,
+    default: 0
   }
 
 },

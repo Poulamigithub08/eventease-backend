@@ -94,15 +94,15 @@ const getMyEvents = async (req, res) => {
 
     let events;
 
-    if(role === "host"){
+    if (role === "host") {
 
       // HOST EVENTS
       events = await Event.find({ createdBy: userId });
 
-    }else{
+    } else {
 
       // GUEST EVENTS
-      events = await Event.find({ attendees: userId });
+      events = await Event.find({ status: { $ne: "draft" } });
 
     }
 
@@ -114,16 +114,18 @@ const getMyEvents = async (req, res) => {
 
     events.forEach(event => {
 
-      if(event.status === "draft"){
+      if (event.status === "draft") {
         draft.push(event);
       }
 
-      else if(new Date(event.date) > now){
+      if (new Date(event.date) > now) {
         upcoming.push(event);
-      }
-
-      else{
-        past.push(event);
+      } else {
+        if (role === "guest" && event.attendees.includes(userId)) {
+          past.push(event);
+        } else if (role === "host" && event.createdBy.toString() === userId) {
+          past.push(event);
+        }
       }
 
     });
@@ -138,7 +140,7 @@ const getMyEvents = async (req, res) => {
 
     res.json({
       role,
-      events:{
+      events: {
         upcoming,
         past,
         draft
@@ -149,12 +151,67 @@ const getMyEvents = async (req, res) => {
   } catch (error) {
 
     res.status(500).json({
-      message:error.message
+      message: error.message
     });
 
   }
 };
 //TODO: Update Event with authorization checks
+
+const updateEvent = async (req, res) => {
+  const { id } = req.params
+  const { title, description, date, status } = req.body;
+
+  try {
+    const event = await Event.findById(id);
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        message: "Event not found",
+      });
+    }
+
+    if (event.createdBy.toString() !== req.user.id && req.user.role !== "admin") {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized to update this event",
+      });
+    }
+
+    if (title) event.title = title;
+    if (description) event.description = description;
+    if (date) {
+      const eventDate = new Date(date).toDateString();
+      const today = new Date().toDateString();
+
+      if (eventDate > today) {
+        event.date = date;
+      } else {
+        return res.status(400).json({
+          success: false,
+          message: "Event date must be in the future",
+        });
+      }
+    }
+
+    if (status) event.status = status;
+
+    await event.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Event updated successfully",
+      event,
+    });
+  }
+  catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+}
+
 
 // =======================
 // EXPORTS (VERY IMPORTANT)
@@ -164,6 +221,7 @@ module.exports = {
   getEvents,
   getMyEvents,
   deleteEvent,
-  getMyEvents
+  getMyEvents,
+  updateEvent
 };
 

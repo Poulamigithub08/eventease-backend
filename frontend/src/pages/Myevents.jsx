@@ -32,66 +32,7 @@ export default function MyEvents() {
     { to: "/my-events", label: "MY EVENTS" }
   ];
 
-  const eventStats = [
-    {
-      icon: "📅",
-      title: "Upcoming Events",
-      value: stats?.upcoming || 0,
-      color: "from-green-500/15 to-green-600/10",
-      border: "border-green-500/25"
-   },
-   {
-     icon: "✅",
-     title: "Completed",
-     value: stats?.past || 0,
-     color: "from-blue-500/15 to-blue-600/10",
-     border: "border-blue-500/25"
-   },
-   {
-     icon: "⏳",
-     title: "In Planning",
-     value: stats?.draft || 0,
-     color: "from-yellow-500/15 to-yellow-600/10",
-     border: "border-yellow-500/25"
-   },
-   {
-     icon: "💰",
-     title: "Total Events",
-     value: stats?.total || 0,
-     color: "from-purple-500/15 to-purple-600/10",
-    border: "border-purple-500/25"
-   }
-  ];
-  const quickActions = [
-   {
-     icon: "🎯",
-     title: "Create New Event",
-     description: "Start planning a new event",
-     color: "from-red-500/15 to-red-600/10",
-     border: "border-red-500/25"
-   },
-   {
-     icon: "📊",
-     title: "Event Analytics",
-     description: "View event performance",
-     color: "from-purple-500/15 to-purple-600/10",
-     border: "border-purple-500/25"
-   },
-   {
-     icon: "👥",
-     title: "Manage Team",
-     description: "Coordinate with your team",
-     color: "from-blue-500/15 to-blue-600/10",
-     border: "border-blue-500/25"
-    },
-    {
-      icon: "📝",
-      title: "Templates",
-      description: "Use event templates",
-      color: "from-green-500/15 to-green-600/10",
-      border: "border-green-500/25"
-   }
-  ];
+
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -152,7 +93,70 @@ export default function MyEvents() {
 
 }, []);
 
-
+  const eventStats = [
+    {
+      icon: "📅",
+      title: "Upcoming Events",
+      value: stats?.upcoming || 0,
+      color: "from-green-500/15 to-green-600/10",
+      border: "border-green-500/25",
+      hidden: false
+   },
+   {
+     icon: "✅",
+     title: role === "host" ? "Completed" : "Attended",
+     value: stats?.past || 0,
+     color: "from-blue-500/15 to-blue-600/10",
+     border: "border-blue-500/25",
+     hidden: false
+   },
+   {
+     icon: "⏳",
+     title: "In Planning",
+     value: stats?.draft || 0,
+     color: "from-yellow-500/15 to-yellow-600/10",
+     border: "border-yellow-500/25",
+     hidden: role !== "host"
+   },
+   {
+     icon: "💰",
+     title: "Total Events",
+     value: stats?.total || 0,
+     color: "from-purple-500/15 to-purple-600/10",
+    border: "border-purple-500/25",
+    hidden: role !== "host"
+   }
+  ];
+  const quickActions = [
+   {
+     icon: "🎯",
+     title: "Create New Event",
+     description: "Start planning a new event",
+     color: "from-red-500/15 to-red-600/10",
+     border: "border-red-500/25"
+   },
+   {
+     icon: "📊",
+     title: "Event Analytics",
+     description: "View event performance",
+     color: "from-purple-500/15 to-purple-600/10",
+     border: "border-purple-500/25"
+   },
+   {
+     icon: "👥",
+     title: "Manage Team",
+     description: "Coordinate with your team",
+     color: "from-blue-500/15 to-blue-600/10",
+     border: "border-blue-500/25"
+    },
+    {
+      icon: "📝",
+      title: "Templates",
+      description: "Use event templates",
+      color: "from-green-500/15 to-green-600/10",
+      border: "border-green-500/25"
+   }
+  ];
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white overflow-hidden">
       {/* Animated Background */}
@@ -204,8 +208,9 @@ export default function MyEvents() {
             {eventStats.map((stat, index) => (
               <div
                 key={index}
-                className={`bg-gradient-to-br ${stat.color} backdrop-blur-sm rounded-lg p-3 border ${stat.border} transition-all duration-300 hover:scale-105 group cursor-pointer animate-slide-up`}
+                className={`bg-gradient-to-br ${stat.color} backdrop-blur-sm rounded-lg p-3 border ${stat.border} transition-all duration-300 hover:scale-105 group cursor-pointer animate-slide-up ${stat.hidden ? 'hidden' : ''}`}
                 style={{ animationDelay: `${100 + index * 50}ms` }}
+              
               >
                 <div className="text-lg mb-1 group-hover:scale-110 transition-transform duration-300">
                   {stat.icon}
@@ -224,9 +229,10 @@ export default function MyEvents() {
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
             
             {/* Quick Actions Sidebar */}
+            
             <div className="lg:col-span-1 space-y-3">
               {/* Quick Actions */}
-              <div className="bg-gradient-to-br from-black/40 to-black/20 backdrop-blur-xl rounded-lg p-3 border border-red-500/20 animate-slide-up delay-200">
+              <div className="bg-gradient-to-br from-black/40 to-black/20 backdrop-blur-xl rounded-lg p-3 border border-red-500/20 animate-slide-up delay-200 hidden">
                 <h2 className="text-sm font-bold text-white mb-2 text-center">Quick Actions</h2>
                 <div className="space-y-2">
                   {quickActions.map((action, index) => (
@@ -261,7 +267,6 @@ export default function MyEvents() {
                 </div>
               </div>
             </div>
-
             {/* Events Main Content */}
             <div className="lg:col-span-3">
               {/* Tab Navigation */}

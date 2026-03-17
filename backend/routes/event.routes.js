@@ -179,6 +179,67 @@ router.get("/my-events", authMiddleware, eventController.getMyEvents);
 
 router.delete("/:id",authMiddleware, eventController.deleteEvent);
 
+/**
+ * @swagger
+ * /api/events/{id}:
+ *   put:
+ *     summary: Update an event by ID
+ *     tags: [Events]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Event ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *               - date
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: Hackathon
+ *               description:
+ *                 type: string
+ *                 example: 24 hour coding event
+ *               date:
+ *                 type: string
+ *                 format: date-time
+ *                 example: 2026-03-10T09:00:00Z
+ *               status:
+ *                 type: string
+ *                 enum: [draft, confirmed, completed, cancelled]
+ *                 example: confirmed
+ *     responses:
+ *       200:
+ *         description: Event deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 event:
+ *                   $ref: '#/components/schemas/Event'
+ *       400:
+ *         description: Missing required fields or invalid date
+ *       404:
+ *         description: Event not found
+ *       401:
+ *         description: Unauthorized
+ */
+router.put("/:id", authMiddleware, eventController.updateEvent);
 module.exports = router;
 
 

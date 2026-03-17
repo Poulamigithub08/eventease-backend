@@ -10,6 +10,13 @@ export default function Header() {
   const navigate = useNavigate();
   const { user, loading: userLoading, setUser } = useUser();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  const logout = () => {
+  localStorage.removeItem("token");
+  setUser(null);
+  navigate("/");
+};
 
   const paths = {
     home: location.pathname === "/",

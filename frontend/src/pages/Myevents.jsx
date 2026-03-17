@@ -11,7 +11,12 @@ export default function MyEvents() {
   const navigate = useNavigate();
   const [events, setEvents] = useState({ upcoming: [], past: [], draft: [] });
   const [role, setRole] = useState(null);
-  const [stats, setStats] = useState(null);
+  const [stats, setStats] = useState({
+  upcoming: 0,
+  past: 0,
+  draft: 0,
+  total: 0
+  });
 
   // Sample events data
 
@@ -28,35 +33,65 @@ export default function MyEvents() {
   ];
 
   const eventStats = [
-{
-  icon: "📅",
-  title: "Upcoming Events",
-  value: stats?.upcoming || 0,
-  color: "from-green-500/15 to-green-600/10",
-  border: "border-green-500/25"
-},
-{
-  icon: "✅",
-  title: "Completed",
-  value: stats?.past || 0,
-  color: "from-blue-500/15 to-blue-600/10",
-  border: "border-blue-500/25"
-},
-{
-  icon: "⏳",
-  title: "In Planning",
-  value: stats?.draft || 0,
-  color: "from-yellow-500/15 to-yellow-600/10",
-  border: "border-yellow-500/25"
-},
-{
-  icon: "💰",
-  title: "Total Events",
-  value: stats?.total || 0,
-  color: "from-purple-500/15 to-purple-600/10",
-  border: "border-purple-500/25"
-}
-];
+    {
+      icon: "📅",
+      title: "Upcoming Events",
+      value: stats?.upcoming || 0,
+      color: "from-green-500/15 to-green-600/10",
+      border: "border-green-500/25"
+   },
+   {
+     icon: "✅",
+     title: "Completed",
+     value: stats?.past || 0,
+     color: "from-blue-500/15 to-blue-600/10",
+     border: "border-blue-500/25"
+   },
+   {
+     icon: "⏳",
+     title: "In Planning",
+     value: stats?.draft || 0,
+     color: "from-yellow-500/15 to-yellow-600/10",
+     border: "border-yellow-500/25"
+   },
+   {
+     icon: "💰",
+     title: "Total Events",
+     value: stats?.total || 0,
+     color: "from-purple-500/15 to-purple-600/10",
+    border: "border-purple-500/25"
+   }
+  ];
+  const quickActions = [
+   {
+     icon: "🎯",
+     title: "Create New Event",
+     description: "Start planning a new event",
+     color: "from-red-500/15 to-red-600/10",
+     border: "border-red-500/25"
+   },
+   {
+     icon: "📊",
+     title: "Event Analytics",
+     description: "View event performance",
+     color: "from-purple-500/15 to-purple-600/10",
+     border: "border-purple-500/25"
+   },
+   {
+     icon: "👥",
+     title: "Manage Team",
+     description: "Coordinate with your team",
+     color: "from-blue-500/15 to-blue-600/10",
+     border: "border-blue-500/25"
+    },
+    {
+      icon: "📝",
+      title: "Templates",
+      description: "Use event templates",
+      color: "from-green-500/15 to-green-600/10",
+      border: "border-green-500/25"
+   }
+  ];
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -153,9 +188,9 @@ export default function MyEvents() {
       <section className="relative py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto text-center">
           <h1 className="text-xl md:text-2xl font-black mb-2 leading-tight animate-fade-in">
-            <p className="text-gray-400 text-xs">Logged in as: {role}</p>
             My <span className="text-transparent bg-gradient-to-r from-red-400 to-red-600 bg-clip-text">Events</span>
           </h1>
+          <p className="text-gray-400 text-xs">Logged in as: {role}</p>
           <p className="text-xs text-gray-300 mb-6 max-w-md mx-auto leading-relaxed animate-fade-in delay-100">
             Manage all your events in one place. Track progress, coordinate with your team, and create unforgettable experiences.
           </p>
@@ -400,7 +435,7 @@ export default function MyEvents() {
               </div>
               <div className="flex justify-between">
                 <span>Attendees:</span>
-                <span>{selectedEvent.attendees.toLocaleString()}</span>
+               <span>{selectedEvent.attendees?.length || 0}</span>
               </div>
               <div className="flex justify-between">
                 <span>Budget:</span>
@@ -427,7 +462,7 @@ export default function MyEvents() {
       )}
 
       {/* Add these animations to your CSS */}
-      <style jsx>{`
+      <style>{`
         @keyframes fade-in {
           from {
             opacity: 0;

@@ -84,24 +84,76 @@ const deleteEvent = async (req, res) => {
     });
   }
 };
+
+
 const getMyEvents = async (req, res) => {
   try {
-    const events = await Event.find({
-      createdBy: req.user.id
+
+    const userId = req.user.id;
+    const role = req.user.role;
+
+    let events;
+
+    if(role === "host"){
+
+      // HOST EVENTS
+      events = await Event.find({ createdBy: userId });
+
+    }else{
+
+      // GUEST EVENTS
+      events = await Event.find({ attendees: userId });
+
+    }
+
+    const upcoming = [];
+    const past = [];
+    const draft = [];
+
+    const now = new Date();
+
+    events.forEach(event => {
+
+      if(event.status === "draft"){
+        draft.push(event);
+      }
+
+      else if(new Date(event.date) > now){
+        upcoming.push(event);
+      }
+
+      else{
+        past.push(event);
+      }
+
     });
 
-    res.status(200).json({
-      success: true,
-      events
+    // statistics
+    const stats = {
+      total: events.length,
+      upcoming: upcoming.length,
+      past: past.length,
+      draft: draft.length
+    };
+
+    res.json({
+      role,
+      events:{
+        upcoming,
+        past,
+        draft
+      },
+      stats
     });
+
   } catch (error) {
+
     res.status(500).json({
-      success: false,
-      message: error.message
+      message:error.message
     });
+
   }
 };
-
 //TODO: Update Event with authorization checks
 
 // =======================
@@ -111,6 +163,7 @@ module.exports = {
   createEvent,
   getEvents,
   getMyEvents,
-  deleteEvent
+  deleteEvent,
+  getMyEvents
 };
 
